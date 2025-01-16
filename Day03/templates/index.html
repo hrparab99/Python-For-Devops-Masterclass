@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Status</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+        .progress-container {
+            text-align: center;
+        }
+        .progress-bar {
+            width: 150px;
+            height: 150px;
+            border-radius: 150px 150px 150px 150px;
+            transform: rotate(0deg); /* Rotate to start progress from the bottom */
+        }
+        .progress-label {
+            margin-top: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-container">
+        <div class="d-flex justify-content-center">
+            <!-- CPU Usage -->
+            <div class="mx-3">
+                <div class="progress-bar" id="cpu-bar" style="background: conic-gradient(#0d6efd 0%, #e9ecef 0%);"></div>
+                <div class="progress-label" id="cpu-label">CPU: 0%</div>
+            </div>
+
+            <!-- RAM Usage -->
+            <div class="mx-3">
+                <div class="progress-bar" id="ram-bar" style="background: conic-gradient(#ffc107 0%, #e9ecef 0%);"></div>
+                <div class="progress-label" id="ram-label">RAM: 0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JavaScript to fetch data and update the UI -->
+    <script>
+        function updateUsage() {
+            fetch("/usage")
+                .then(response => response.json())
+                .then(data => {
+                    const cpuPercent = data.cpu_percent;
+                    const ramPercent = data.ram_percent;
+
+                    // Update CPU bar and label
+                    const cpuBar = document.getElementById("cpu-bar");
+                    const cpuLabel = document.getElementById("cpu-label");
+                    cpuBar.style.background = `conic-gradient(#0d6efd ${cpuPercent}%, #e9ecef ${cpuPercent}%)`;
+                    cpuLabel.textContent = `CPU: ${cpuPercent}%`;
+
+                    // Update RAM bar and label
+                    const ramBar = document.getElementById("ram-bar");
+                    const ramLabel = document.getElementById("ram-label");
+                    ramBar.style.background = `conic-gradient(#ffc107 ${ramPercent}%, #e9ecef ${ramPercent}%)`;
+                    ramLabel.textContent = `RAM: ${ramPercent}%`;
+                })
+                .catch(error => console.error("Error fetching usage data:", error));
+        }
+
+        // Update usage every 1 second
+        setInterval(updateUsage, 1000);
+
+        // Initial update
+        updateUsage();
+    </script>
+</body>
+</html>
